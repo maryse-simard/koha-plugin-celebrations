@@ -46,7 +46,7 @@ export function createThemeCard(theme, currentTheme) {
           <div class="theme-name">${TRANSLATION_UI.form[displayName]}</div>
         </div>
       </div>
-      <div class="theme-card-body">
+      <div class="theme-card-body" style="padding:12px;">
         <div class="theme-dates">
           <div class="date-row">
             <span class="labelCard">${TRANSLATION_UI.prog['debut']}</span>
@@ -212,6 +212,20 @@ export function attachThemeCardEvents(onEdit, onDelete) {
   document.querySelectorAll('.action-btn-edit').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       const themeName = e.currentTarget.dataset.theme;
+
+      const confTitre = document.getElementById('ConfTitre');
+
+      const themeForm = document.getElementById('theme-form');
+      const celebrationComplete = document.getElementById('celebration-complete');
+      const previewBtn = document.getElementById('preview-button');
+
+      if (getComputedStyle(celebrationComplete).display === 'block') {
+        confTitre.style.display = 'block';
+        themeForm.style.display = 'block';
+        celebrationComplete.style.display = 'none';
+        previewBtn.style.display = 'block';
+      }
+
       disableAllActionButtons();
       try {
         if (onEdit) {
