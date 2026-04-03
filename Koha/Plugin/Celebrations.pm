@@ -13,6 +13,8 @@ use Koha::Plugin::Celebrations::Lib::ThemeManager;
 use Koha::Plugin::Celebrations::Lib::AssetHandler;
 use Koha::Plugin::Celebrations::Lib::TemplateBuilder;
 use Koha::Plugin::Celebrations::Lib::I18n;
+use Koha::Plugins qw(_restart_after_change);
+use Koha::Caches;
 
 =head1 NAME
 
@@ -42,7 +44,7 @@ our $metadata = {
     description     => 'Un OPAC pour chaque saison.',
     date_authored   => '2025-09-09',
     date_updated    => '2025-12-19',
-    version         => '1.0.0',
+    version         => '1.1.0',
     minimum_version => '24.05',
 };
 
@@ -57,6 +59,23 @@ Initialise les gestionnaires internes (config, thèmes, assets, templates, i18n)
 
 sub new {
     my ($class, $args) = @_;
+
+    my $dbh = C4::Context->dbh;
+
+    my $exists = $dbh->selectrow_array(
+        "SELECT 1 FROM plugin_methods WHERE plugin_class=? AND plugin_method=?",
+        undef,
+        $class, 'tool'
+    );
+
+    unless ($exists) {
+        $dbh->do(
+            "INSERT INTO plugin_methods (plugin_class, plugin_method) VALUES (?, ?)",
+            undef,
+            $class, 'tool'
+        );
+    }
+
     $args->{metadata} = $metadata;
     $args->{enable_plugins_api} = 1;
     my $self = $class->SUPER::new($args);
@@ -65,6 +84,7 @@ sub new {
     $self->{asset_handler} = Koha::Plugin::Celebrations::Lib::AssetHandler->new($self);
     $self->{template_builder} = Koha::Plugin::Celebrations::Lib::TemplateBuilder->new($self);
     $self->{i18n} = Koha::Plugin::Celebrations::Lib::I18n->new($self);
+    $self->{restart_done} = 0;
     return $self;
 }
 
@@ -131,6 +151,13 @@ Affiche l'interface Intranet du plugin.
 
 sub configure {
     my ($self, $args) = @_;
+
+    unless ($self->{restart_done}) {
+        Koha::Caches->get_instance()->flush_all();
+        Koha::Plugins->_restart_after_change();
+        $self->{restart_done} = 1;
+    }
+
     return $self->{template_builder}->build_tool_interface();
 }
 
