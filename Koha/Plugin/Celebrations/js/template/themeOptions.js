@@ -208,8 +208,30 @@ export function showThemeEditor(themeName, state, elements) {
     cancelBtn.textContent = `${TRANSLATION_UI['cancel']}`;
     const buttonRow = getById('greyBtn');
     if (buttonRow) buttonRow.prepend(cancelBtn);
-    cancelBtn.addEventListener('click', () => exitThemeEditor(state.rawThemes, elements));
+
+    const confTitre = document.getElementById('ConfTitre');
+   
+    const themeSelect = document.getElementById('theme-select');
+    const themeForm = document.getElementById('theme-form');
+    const celebrationComplete = document.getElementById('celebration-complete');
+
+    cancelBtn.addEventListener('click', () => {
+
+      const isEmpty = themeSelect.options.length == 0;
+
+      if(isEmpty){
+
+        confTitre.style.display = 'none';
+        themeForm.style.display = 'none';
+        celebrationComplete.style.display = 'block';
+
+      }else{
+        exitThemeEditor(state.rawThemes, elements)
+      }
+    });
+
   }
+  
   if (resetbtn) {
     resetbtn.removeEventListener('click', resetbtn.resetListener);
     resetbtn.resetListener = () => resetThemeOptions(themeName, state);

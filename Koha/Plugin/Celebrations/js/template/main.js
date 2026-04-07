@@ -185,10 +185,28 @@ class ThemeManager {
       refreshThemeSelect(this.state.allThemes, this.state.rawThemes, this.elements.themeSelect);
       exitThemeEditor(this.state.rawThemes, this.elements);
       const activeTheme = this.elements.themeSelect.value;
-      updatePreview(this.state.rawThemes, activeTheme);
+      //updatePreview(this.state.rawThemes, activeTheme);
     } finally {
       this.toggleButtons(buttons, false);
-    }
+
+      const confTitre = document.getElementById('ConfTitre');
+   
+      const themeSelect = document.getElementById('theme-select');
+      const themeForm = document.getElementById('theme-form');
+      const celebrationComplete = document.getElementById('celebration-complete');
+      const previewBtn = document.getElementById('preview-button');
+
+      const isEmpty = themeSelect.options.length == 0;
+
+      if(isEmpty){
+
+        confTitre.style.display = 'none';
+        themeForm.style.display = 'none';
+        celebrationComplete.style.display = 'block';
+        previewBtn.style.display = 'block';
+
+      }
+    } 
   }
   /**
    *

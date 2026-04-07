@@ -58,6 +58,7 @@ export async function submitThemeForm(form, rawThemes, elements, onSuccess) {
     end_date,
     elements: elementsPayload
   };
+
   try {
     const response = await fetch(API_ENDPOINTS.themes, {
       method: 'POST',
@@ -68,6 +69,11 @@ export async function submitThemeForm(form, rawThemes, elements, onSuccess) {
       credentials: 'same-origin',
       body: JSON.stringify(payload)
     });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
     const json = await response.json();
     const data = json.results?.result;
     if (data.success) {
@@ -132,6 +138,8 @@ export function resetConfiguration(form, currentSettings) {
  *  @param {Object} elements - Tous les éléments DOM utiles (messages, boutons)
  */
 export async function updateTheme(themeName, rawThemes, form, elements) {
+  const themeSelect = document.getElementById('theme-select');
+
   const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
   const resetBtn = form.querySelector('button[type="reset"], input[type="reset"]');
   toggleButtons([submitBtn, resetBtn], true);
@@ -179,16 +187,34 @@ export async function updateTheme(themeName, rawThemes, form, elements) {
     if (data?.success) {
       elements.successMessage.textContent = TRANSLATION_BACKEND['theme_updated'];
       elements.successMessage.style.display = "block";
+
+      const isEmpty = themeSelect.options.length == 0;
+      if(isEmpty){
+         window.alert(TRANSLATION_BACKEND['theme_updated']);
+      }
+
       return true;
     } else {
       elements.erreurMessage.textContent =  TRANSLATION_BACKEND[data.message];
       elements.erreurMessage.style.display = "block";
+
+      const isEmpty = themeSelect.options.length == 0;
+      if(isEmpty){
+         window.alert(TRANSLATION_BACKEND[data.message]);
+      }
+
       return false;
     }
   } catch (error) {
     console.error("Erreur réseau:", error);
     elements.erreurMessage.textContent = TRANSLATION_BACKEND['connexion_error'];
     elements.erreurMessage.style.display = "block";
+
+    const isEmpty = themeSelect.options.length == 0;
+      if(isEmpty){
+         window.alert(TRANSLATION_BACKEND['connexion_error']);
+      }
+
     return false;
   } finally {
     setTimeout(() => {
