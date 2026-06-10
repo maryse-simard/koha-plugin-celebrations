@@ -5,9 +5,6 @@ use base qw(Koha::Plugins::Base);
 use CGI;
 use JSON;
 use C4::Context;
-# Importation des modules du plugin
-use FindBin;
-use lib "$FindBin::Bin";
 use Koha::Plugin::Celebrations::Lib::Config;
 use Koha::Plugin::Celebrations::Lib::ThemeManager;
 use Koha::Plugin::Celebrations::Lib::AssetHandler;
